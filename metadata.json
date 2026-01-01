@@ -1,0 +1,7 @@
+{
+  "name": "Copy of New Year Celebration Hub",
+  "description": "An immersive, AI-powered celebration experience featuring fireworks, countdowns, resolution planning, and festive image generation.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
