@@ -7,6 +7,7 @@ import ResolutionBuddy from './components/ResolutionBuddy.tsx';
 import FestiveGallery from './components/FestiveGallery.tsx';
 import SpeechSection from './components/SpeechSection.tsx';
 import AchievementsGallery from './components/AchievementsGallery.tsx';
+import MusicPlayer from './components/MusicPlayer.tsx';
 import { generateSpeechAudio } from './services/geminiService.ts';
 import { playRawPcm } from './utils/audioUtils.ts';
 
@@ -35,6 +36,9 @@ const App: React.FC = () => {
     <div className="min-h-screen relative text-slate-200 selection:bg-amber-500/30">
       {/* Background Layer */}
       <FireworksDisplay />
+      
+      {/* Background Music Control */}
+      <MusicPlayer />
       
       {/* Main Content */}
       <main className="relative z-10 container mx-auto px-4 pb-20">
