@@ -9,14 +9,17 @@ const SpeechSection: React.FC = () => {
   const [speech, setSpeech] = useState<CelebrationMessage | null>(null);
   const [loading, setLoading] = useState(false);
   const [playingAudio, setPlayingAudio] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleGenerate = async () => {
     setLoading(true);
+    setError(null);
     try {
       const data = await generateCelebrationSpeech(mood);
       setSpeech(data);
     } catch (error) {
       console.error(error);
+      setError("Failed to generate speech. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -25,13 +28,17 @@ const SpeechSection: React.FC = () => {
   const handleListen = async () => {
     if (!speech || playingAudio) return;
     setPlayingAudio(true);
+    setError(null);
     try {
       const audioData = await generateSpeechAudio(`Read this speech with feeling: ${speech.content}`);
       if (audioData) {
         await playRawPcm(audioData);
+      } else {
+        throw new Error("No audio data returned");
       }
     } catch (error) {
       console.error("Audio playback error", error);
+      setError("Could not play audio. Ensure your volume is up and the API key is valid.");
     } finally {
       setPlayingAudio(false);
     }
@@ -76,6 +83,12 @@ const SpeechSection: React.FC = () => {
             {loading ? "Thinking..." : "Generate My Speech"}
           </button>
         </div>
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-xl text-red-400 text-center text-sm">
+            {error}
+          </div>
+        )}
 
         {speech && (
           <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">

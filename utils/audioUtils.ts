@@ -1,6 +1,17 @@
 
+let sharedAudioCtx: AudioContext | null = null;
+
+export function getAudioContext(): AudioContext {
+  if (!sharedAudioCtx) {
+    sharedAudioCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
+  }
+  return sharedAudioCtx;
+}
+
 export function decode(base64: string): Uint8Array {
-  const binaryString = atob(base64);
+  // Remove any potential whitespace or data URL prefixes
+  const cleanBase64 = base64.replace(/^data:audio\/\w+;base64,/, '').replace(/\s/g, '');
+  const binaryString = atob(cleanBase64);
   const len = binaryString.length;
   const bytes = new Uint8Array(len);
   for (let i = 0; i < len; i++) {
@@ -30,13 +41,24 @@ export async function decodeAudioData(
 }
 
 export async function playRawPcm(base64Data: string) {
-  const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
-  const decodedBytes = decode(base64Data);
-  const audioBuffer = await decodeAudioData(decodedBytes, audioCtx, 24000, 1);
+  const audioCtx = getAudioContext();
   
-  const source = audioCtx.createBufferSource();
-  source.buffer = audioBuffer;
-  source.connect(audioCtx.destination);
-  source.start();
-  return source;
+  // Browsers require AudioContext to be resumed within a user gesture
+  if (audioCtx.state === 'suspended') {
+    await audioCtx.resume();
+  }
+
+  try {
+    const decodedBytes = decode(base64Data);
+    const audioBuffer = await decodeAudioData(decodedBytes, audioCtx, 24000, 1);
+    
+    const source = audioCtx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(audioCtx.destination);
+    source.start();
+    return source;
+  } catch (err) {
+    console.error("Error playing PCM audio:", err);
+    throw err;
+  }
 }
