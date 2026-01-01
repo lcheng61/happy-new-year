@@ -2,8 +2,9 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { Resolution, CelebrationMessage } from "../types.ts";
 
+// Initialize the Gemini client using the environment variable directly as required by guidelines.
 export const getGeminiClient = () => {
-  return new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+  return new GoogleGenAI({ apiKey: process.env.API_KEY });
 };
 
 export const generateResolutions = async (interests: string): Promise<Resolution[]> => {

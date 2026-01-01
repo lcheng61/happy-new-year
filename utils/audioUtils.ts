@@ -3,13 +3,36 @@ let sharedAudioCtx: AudioContext | null = null;
 
 export function getAudioContext(): AudioContext {
   if (!sharedAudioCtx) {
-    sharedAudioCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
+    // iOS Safari often prefers 44.1k or 48k for the hardware context
+    const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
+    sharedAudioCtx = new AudioContextClass();
   }
   return sharedAudioCtx;
 }
 
+/**
+ * Robustly unlocks the AudioContext on iOS/Android.
+ * Should be called inside a user interaction (click/touchstart)
+ */
+export async function unlockAudio(ctx: AudioContext): Promise<boolean> {
+  // Cast state to string to avoid comparison errors with narrower inferred types
+  if ((ctx.state as string) === 'running') return true;
+
+  // 1. Resume the context
+  await ctx.resume();
+
+  // 2. Play a tiny bit of silence to 'prime' the hardware on iOS
+  const buffer = ctx.createBuffer(1, 1, 22050);
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  source.connect(ctx.destination);
+  source.start(0);
+
+  // Cast state to string to avoid comparison errors with narrower inferred types
+  return (ctx.state as string) === 'running';
+}
+
 export function decode(base64: string): Uint8Array {
-  // Remove any potential whitespace or data URL prefixes
   const cleanBase64 = base64.replace(/^data:audio\/\w+;base64,/, '').replace(/\s/g, '');
   const binaryString = atob(cleanBase64);
   const len = binaryString.length;
@@ -33,7 +56,6 @@ export async function decodeAudioData(
   for (let channel = 0; channel < numChannels; channel++) {
     const channelData = buffer.getChannelData(channel);
     for (let i = 0; i < frameCount; i++) {
-      // Convert 16-bit PCM to float [-1.0, 1.0]
       channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
     }
   }
@@ -42,14 +64,11 @@ export async function decodeAudioData(
 
 export async function playRawPcm(base64Data: string) {
   const audioCtx = getAudioContext();
-  
-  // Browsers require AudioContext to be resumed within a user gesture
-  if (audioCtx.state === 'suspended') {
-    await audioCtx.resume();
-  }
+  await unlockAudio(audioCtx);
 
   try {
     const decodedBytes = decode(base64Data);
+    // Note: TTS data is specifically 24000Hz
     const audioBuffer = await decodeAudioData(decodedBytes, audioCtx, 24000, 1);
     
     const source = audioCtx.createBufferSource();
