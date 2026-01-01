@@ -6,6 +6,7 @@ import CountdownTimer from './components/CountdownTimer.tsx';
 import ResolutionBuddy from './components/ResolutionBuddy.tsx';
 import FestiveGallery from './components/FestiveGallery.tsx';
 import SpeechSection from './components/SpeechSection.tsx';
+import AchievementsGallery from './components/AchievementsGallery.tsx';
 import { generateSpeechAudio } from './services/geminiService.ts';
 import { playRawPcm } from './utils/audioUtils.ts';
 
@@ -55,6 +56,11 @@ const App: React.FC = () => {
 
         {/* Speech Section */}
         <SpeechSection />
+
+        {/* Achievements Section moved to the very end of the page content */}
+        <section className="mb-24">
+          <AchievementsGallery />
+        </section>
 
         {/* Footer */}
         <footer className="text-center py-10 opacity-50 text-sm">

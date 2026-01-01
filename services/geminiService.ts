@@ -90,6 +90,32 @@ export const generateFestiveImage = async (theme: string): Promise<string | null
   return null;
 };
 
+export const generateAchievementImage = async (description: string): Promise<string | null> => {
+  const ai = getGeminiClient();
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-flash-image',
+    contents: {
+      parts: [
+        {
+          text: `A cinematic, highly detailed conceptual 3D render illustrating this personal achievement: "${description}". The style should be uplifting, triumphant, and festive with hints of gold and celebration light. 4k, high quality.`,
+        },
+      ],
+    },
+    config: {
+      imageConfig: {
+        aspectRatio: "1:1",
+      },
+    },
+  });
+
+  for (const part of response.candidates?.[0]?.content.parts || []) {
+    if (part.inlineData) {
+      return `data:image/png;base64,${part.inlineData.data}`;
+    }
+  }
+  return null;
+};
+
 /**
  * Generates speech audio for a given text.
  * Gemini TTS returns raw PCM data (24kHz, 16-bit, mono).
