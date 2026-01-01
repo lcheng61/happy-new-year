@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { generateResolutions } from '../services/geminiService';
-import { Resolution } from '../types';
+import { generateResolutions } from '../services/geminiService.ts';
+import { Resolution } from '../types.ts';
 
 const ResolutionBuddy: React.FC = () => {
   const [interests, setInterests] = useState('');

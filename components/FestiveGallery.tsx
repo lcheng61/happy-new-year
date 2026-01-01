@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { generateFestiveImage } from '../services/geminiService';
+import { generateFestiveImage } from '../services/geminiService.ts';
 
 const FestiveGallery: React.FC = () => {
   const [theme, setTheme] = useState('Classic Golden');

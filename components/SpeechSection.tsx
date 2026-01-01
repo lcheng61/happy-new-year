@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { generateCelebrationSpeech, generateSpeechAudio } from '../services/geminiService';
-import { CelebrationMessage } from '../types';
-import { playRawPcm } from '../utils/audioUtils';
+import { generateCelebrationSpeech, generateSpeechAudio } from '../services/geminiService.ts';
+import { CelebrationMessage } from '../types.ts';
+import { playRawPcm } from '../utils/audioUtils.ts';
 
 const SpeechSection: React.FC = () => {
   const [mood, setMood] = useState('Hopeful');

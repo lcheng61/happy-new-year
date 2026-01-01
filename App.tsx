@@ -1,13 +1,13 @@
 
 import React, { useState } from 'react';
-import FireworksDisplay from './components/FireworksDisplay';
-import CelebrationHeader from './components/CelebrationHeader';
-import CountdownTimer from './components/CountdownTimer';
-import ResolutionBuddy from './components/ResolutionBuddy';
-import FestiveGallery from './components/FestiveGallery';
-import SpeechSection from './components/SpeechSection';
-import { generateSpeechAudio } from './services/geminiService';
-import { playRawPcm } from './utils/audioUtils';
+import FireworksDisplay from './components/FireworksDisplay.tsx';
+import CelebrationHeader from './components/CelebrationHeader.tsx';
+import CountdownTimer from './components/CountdownTimer.tsx';
+import ResolutionBuddy from './components/ResolutionBuddy.tsx';
+import FestiveGallery from './components/FestiveGallery.tsx';
+import SpeechSection from './components/SpeechSection.tsx';
+import { generateSpeechAudio } from './services/geminiService.ts';
+import { playRawPcm } from './utils/audioUtils.ts';
 
 const App: React.FC = () => {
   const [loadingGreeting, setLoadingGreeting] = useState(false);

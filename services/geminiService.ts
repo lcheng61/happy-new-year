@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type, Modality } from "@google/genai";
-import { Resolution, CelebrationMessage } from "../types";
+import { Resolution, CelebrationMessage } from "../types.ts";
 
 export const getGeminiClient = () => {
   return new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
